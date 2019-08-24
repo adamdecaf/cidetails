@@ -1,1 +1,1 @@
-# ci-info
+# cidetails
