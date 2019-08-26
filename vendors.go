@@ -168,7 +168,7 @@ var vendors = []vendor{
 		pr:     func() bool { return false },
 	},
 	{
-		names:  n("Travis CI"),
+		names:  n("Travis CI", "TravisCI"),
 		envVar: "TRAVIS",
 		pr:     func() bool { return os.Getenv("TRAVIS_PULL_REQUEST") != "false" },
 	},

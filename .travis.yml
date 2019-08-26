@@ -15,7 +15,7 @@ matrix:
       go: master
 
 env:
-  - CURRENT_CI_PROVIDER=TravisCI GO111MODULE=on
+  - CURRENT_CI_PROVIDER='Travis CI' GO111MODULE=on
 
 before_install:
   # Setup directory for binaries
