@@ -2,6 +2,7 @@
 
 [![GoDoc](https://godoc.org/github.com/adamdecaf/cidetails?status.svg)](https://godoc.org/github.com/adamdecaf/cidetails)
 [![Build Status](https://travis-ci.com/adamdecaf/cidetails.svg?branch=master)](https://travis-ci.com/adamdecaf/cidetails)
+[![CircleCI](https://circleci.com/gh/adamdecaf/cidetails.svg?style=svg)](https://circleci.com/gh/adamdecaf/cidetails)
 [![Apache 2 licensed](https://img.shields.io/badge/license-Apache2-blue.svg)](https://raw.githubusercontent.com/adamdecaf/cidetails/master/LICENSE)
 
 Get information about the current Continuous Integration (CI) environment. Inspired by [watson/ci-info](https://github.com/watson/ci-info).
