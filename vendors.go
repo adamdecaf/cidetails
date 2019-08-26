@@ -43,6 +43,11 @@ var vendors = []vendor{
 		pr:     nonempty("APPVEYOR_PULL_REQUEST_NUMBER"),
 	},
 	{
+		names:  n("AWS CodeBuild"),
+		envVar: "CODEBUILD_BUILD_ARN",
+		pr:     func() bool { return false },
+	},
+	{
 		names:  n("Azure Pipelines"),
 		envVar: "SYSTEM_TEAMFOUNDATIONCOLLECTIONURI",
 		pr:     nonempty("SYSTEM_PULLREQUEST_PULLREQUESTID"),
@@ -81,11 +86,6 @@ var vendors = []vendor{
 		names:  n("Cirrus CI"),
 		envVar: "CIRRUS_CI",
 		pr:     nonempty("CIRRUS_PR"),
-	},
-	{
-		names:  n("AWS CodeBuild"),
-		envVar: "CODEBUILD_BUILD_ARN",
-		pr:     func() bool { return false },
 	},
 	{
 		names:  n("Codeship"),
