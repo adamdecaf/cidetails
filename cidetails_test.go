@@ -5,6 +5,7 @@
 package cidetails
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -16,6 +17,10 @@ var (
 	// to match against what is discovered.
 	currentCIProvider = os.Getenv("CURRENT_CI_PROVIDER")
 )
+
+func init() {
+	fmt.Printf("CURRENT_CI_PROVIDER=%s\n", currentCIProvider)
+}
 
 func TestCIDetails__In(t *testing.T) {
 	if currentCIProvider == "" {
