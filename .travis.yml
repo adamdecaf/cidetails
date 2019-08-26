@@ -1,0 +1,48 @@
+language: go
+sudo: true
+
+matrix:
+  allow_failures:
+    - go: master
+  include:
+    - os: linux
+      go: 1.12.x
+    - os: osx
+      go: 1.12.x
+    - os: windows
+      go: 1.12.x
+    - os: linux
+      go: master
+
+env:
+  - CURRENT_CI_PROVIDER='Travis CI' GO111MODULE=on
+
+before_install:
+  # Setup directory for binaries
+  - mkdir ./bin
+  - export PATH=$PATH:$PWD/bin
+  # Misspell
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget -O misspell.tar.gz https://github.com/client9/misspell/releases/download/v0.3.4/misspell_0.3.4_linux_64bit.tar.gz; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget -O misspell.tar.gz https://github.com/client9/misspell/releases/download/v0.3.4/misspell_0.3.4_mac_64bit.tar.gz; fi
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then tar xf misspell.tar.gz && cp ./misspell ./bin/misspell; fi
+  # staticcheck
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget -O staticcheck.tar.gz https://github.com/dominikh/go-tools/releases/download/2019.2.2/staticcheck_linux_amd64.tar.gz; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget -O staticcheck.tar.gz https://github.com/dominikh/go-tools/releases/download/2019.2.2/staticcheck_darwin_amd64.tar.gz; fi
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then tar xf staticcheck.tar.gz && cp ./staticcheck/staticcheck ./bin/staticcheck; fi
+  # golint
+  - go get -u golang.org/x/lint/golint
+
+before_script:
+  - GOFILES=$(find . -type f -name '*.go' | grep -v vendor)
+  - go mod graph
+
+script:
+  # Just check gofmt on linux, it's the fastest builder
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -z $(gofmt -s -l $GOFILES); fi
+  - go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then misspell -error -locale US $GOFILES; fi
+  - golint -set_exit_status $GOFILES
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then staticcheck ./...; fi
+
+after_success:
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then bash <(curl -s https://codecov.io/bash); fi
