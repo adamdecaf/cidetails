@@ -1,3 +1,3 @@
-module github.com/adamdecaf/ci-info
+module github.com/adamdecaf/cidetails
 
 go 1.12

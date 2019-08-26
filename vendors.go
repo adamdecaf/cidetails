@@ -27,14 +27,14 @@ func nonempty(envVar string) func() bool {
 	}
 }
 
-func any(envVars ...string) bool {
-	for i := range envVars {
-		if nonempty(envVars[i])() {
-			return true
-		}
-	}
-	return false
-}
+// func any(envVars ...string) bool { // TODO(adam): which CI provider was this for?
+// 	for i := range envVars {
+// 		if nonempty(envVars[i])() {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
 
 var vendors = []vendor{
 	{

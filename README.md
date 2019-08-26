@@ -18,16 +18,16 @@ $ go get github.com/adamdecaf/cidetails
 package main
 
 import (
-    "testing"
-    "github.com/adamdecaf/cidetails"
+	"testing"
+	"github.com/adamdecaf/cidetails"
 )
 
 func TestFoo(t *testing.T) {
-    if cidetails.In("TravisCI") {
-        // provider specific code
-    } else {
-        t.Logf("skipping CI setup in %s", cidetails.Name())
-    }
+	if cidetails.In("TravisCI") {
+		// provider specific code
+	} else {
+		t.Logf("skipping CI setup in %s", cidetails.Name())
+	}
 }
 ```
 
