@@ -27,6 +27,12 @@ func nonempty(envVar string) func() bool {
 	}
 }
 
+func match(envVar, value string) func() bool {
+	return func() bool {
+		return strings.EqualFold(strings.TrimSpace(os.Getenv(envVar)), value)
+	}
+}
+
 // func any(envVars ...string) bool { // TODO(adam): which CI provider was this for?
 // 	for i := range envVars {
 // 		if nonempty(envVars[i])() {
@@ -95,7 +101,12 @@ var vendors = []vendor{
 	{
 		names:  n("Drone"),
 		envVar: "DRONE",
-		pr:     nonempty("DRONE_BUILD_EVENT"),
+		pr:     match("DRONE_BUILD_EVENT", "pull_request"),
+	},
+	{
+		names:  n("Woodpecker CI"),
+		envVar: "CI",
+		pr:     match("CI_BUILD_EVENT", "pull_request"),
 	},
 	{
 		names:  n("dsari"),
