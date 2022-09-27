@@ -1,0 +1,8 @@
+pipeline:
+  test:
+    image: golang:1.12
+    commands:
+      - go vet ./...
+      - go test ./...
+    environment:
+      - CURRENT_CI_PROVIDER=Woodpecker CI
