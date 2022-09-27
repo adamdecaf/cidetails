@@ -112,8 +112,8 @@ var vendors = []vendor{
 		pr:     match("DRONE_BUILD_EVENT", "pull_request"),
 	},
 	{
-		names:  n("Woodpecker CI"),
-		envVar: nonempty("CI"),
+		names:  n("Woodpecker CI", "Woodpecker"),
+		envVar: match("CI", "woodpecker"),
 		pr:     match("CI_BUILD_EVENT", "pull_request"),
 	},
 	{
