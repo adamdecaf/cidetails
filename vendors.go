@@ -41,14 +41,16 @@ func parseBool(envVar string) func() bool {
 	}
 }
 
-// func any(envVars ...string) bool { // TODO(adam): which CI provider was this for?
-// 	for i := range envVars {
-// 		if nonempty(envVars[i])() {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
+func any(envVars ...string) func() bool {
+	return func() bool {
+		for i := range envVars {
+			if nonempty(envVars[i])() {
+				return true
+			}
+		}
+		return false
+	}
+}
 
 var vendors = []vendor{
 	{
@@ -138,7 +140,7 @@ var vendors = []vendor{
 	},
 	{
 		names:  n("Jenkins"),
-		envVar: nonempty("JENKINS_URL"),
+		envVar: any("JENKINS_URL", "BUILD_ID"),
 		pr:     nonempty("ghprbPullId"),
 	},
 	{
