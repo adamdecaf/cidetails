@@ -6,6 +6,7 @@ package cidetails
 
 import (
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -29,7 +30,14 @@ func nonempty(envVar string) func() bool {
 
 func match(envVar, value string) func() bool {
 	return func() bool {
-		return strings.EqualFold(strings.TrimSpace(os.Getenv(envVar)), value)
+		return strings.TrimSpace(os.Getenv(envVar)) == value
+	}
+}
+
+func parseBool(envVar string) func() bool {
+	return func() bool {
+		v, _ := strconv.ParseBool(strings.TrimSpace(os.Getenv(envVar)))
+		return v
 	}
 }
 
@@ -81,7 +89,7 @@ var vendors = []vendor{
 	{
 		names:  n("Buildkite"),
 		envVar: "BUILDKITE",
-		pr:     func() bool { return os.Getenv("BUILDKITE_PULL_REQUEST") != "false" },
+		pr:     parseBool("BUILDKITE_PULL_REQUEST"),
 	},
 	{
 		names:  n("CircleCI"),
@@ -141,12 +149,12 @@ var vendors = []vendor{
 	{
 		names:  n("Netlify CI"),
 		envVar: "NETLIFY_BUILD_BASE",
-		pr:     func() bool { return os.Getenv("PULL_REQUEST") != "false" },
+		pr:     parseBool("PULL_REQUEST"),
 	},
 	{
 		names:  n("Nevercode"),
 		envVar: "NEVERCODE",
-		pr:     func() bool { return os.Getenv("NEVERCODE_PULL_REQUEST") != "false" },
+		pr:     parseBool("NEVERCODE_PULL_REQUEST"),
 	},
 	{
 		names:  n("Sail CI"),
@@ -161,7 +169,7 @@ var vendors = []vendor{
 	{
 		names:  n("Shippable"),
 		envVar: "SHIPPABLE",
-		pr:     func() bool { return os.Getenv("IS_PULL_REQUEST") == "true" },
+		pr:     parseBool("IS_PULL_REQUEST"),
 	},
 	{
 		names:  n("Solano CI"),
@@ -181,6 +189,6 @@ var vendors = []vendor{
 	{
 		names:  n("Travis CI", "TravisCI"),
 		envVar: "TRAVIS",
-		pr:     func() bool { return os.Getenv("TRAVIS_PULL_REQUEST") != "false" },
+		pr:     parseBool("TRAVIS_PULL_REQUEST"),
 	},
 }
