@@ -11,7 +11,7 @@ Get information about the current Continuous Integration (CI) environment. Inspi
 ## Installation
 
 ```
-$ go get github.com/adamdecaf/cidetails
+$ go get github.com/adamdecaf/cidetails@master
 ```
 
 ## Usage
