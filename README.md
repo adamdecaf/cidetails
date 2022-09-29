@@ -65,6 +65,7 @@ Officially supported CI servers:
 - [TaskCluster](http://docs.taskcluster.net)
 - [TeamCity](https://www.jetbrains.com/teamcity/) by JetBrains
 - [Travis CI](http://travis-ci.org)
+- [Woodpecker CI](https://woodpecker-ci.org)
 
 ## License
 

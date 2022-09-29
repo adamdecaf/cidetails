@@ -6,6 +6,7 @@ package cidetails
 
 import (
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -13,7 +14,7 @@ type vendor struct {
 	// case-insensitive names to describe a CI service
 	// names should be from the current to oldest
 	names  []string
-	envVar string
+	envVar func() bool
 	pr     func() bool
 }
 
@@ -27,149 +28,169 @@ func nonempty(envVar string) func() bool {
 	}
 }
 
-// func any(envVars ...string) bool { // TODO(adam): which CI provider was this for?
-// 	for i := range envVars {
-// 		if nonempty(envVars[i])() {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
+func match(envVar, value string) func() bool {
+	return func() bool {
+		return strings.TrimSpace(os.Getenv(envVar)) == value
+	}
+}
+
+func parseBool(envVar string) func() bool {
+	return func() bool {
+		v, _ := strconv.ParseBool(strings.TrimSpace(os.Getenv(envVar)))
+		return v
+	}
+}
+
+func any(envVars ...string) func() bool {
+	return func() bool {
+		for i := range envVars {
+			if nonempty(envVars[i])() {
+				return true
+			}
+		}
+		return false
+	}
+}
 
 var vendors = []vendor{
 	{
 		names:  n("AppVeyor"),
-		envVar: "APPVEYOR",
+		envVar: nonempty("APPVEYOR"),
 		pr:     nonempty("APPVEYOR_PULL_REQUEST_NUMBER"),
 	},
 	{
 		names:  n("AWS CodeBuild"),
-		envVar: "CODEBUILD_BUILD_ARN",
+		envVar: nonempty("CODEBUILD_BUILD_ARN"),
 		pr:     func() bool { return false },
 	},
 	{
 		names:  n("Azure Pipelines"),
-		envVar: "SYSTEM_TEAMFOUNDATIONCOLLECTIONURI",
+		envVar: nonempty("SYSTEM_TEAMFOUNDATIONCOLLECTIONURI"),
 		pr:     nonempty("SYSTEM_PULLREQUEST_PULLREQUESTID"),
 	},
 	{
 		names:  n("Bamboo"),
-		envVar: "bamboo_planKey",
+		envVar: nonempty("bamboo_planKey"),
 		pr:     func() bool { return false },
 	},
 	{
 		names:  n("Bitbucket Pipelines"),
-		envVar: "BITBUCKET_COMMIT",
+		envVar: nonempty("BITBUCKET_COMMIT"),
 		pr:     nonempty("BITBUCKET_PR_ID"),
 	},
 	{
 		names:  n("Bitrise"),
-		envVar: "BITRISE_IO",
+		envVar: nonempty("BITRISE_IO"),
 		pr:     nonempty("BITRISE_PULL_REQUEST"),
 	},
 	{
 		names:  n("Buddy"),
-		envVar: "BUDDY_WORKSPACE_ID",
+		envVar: nonempty("BUDDY_WORKSPACE_ID"),
 		pr:     nonempty("BUDDY_EXECUTION_PULL_REQUEST_ID"),
 	},
 	{
 		names:  n("Buildkite"),
-		envVar: "BUILDKITE",
-		pr:     func() bool { return os.Getenv("BUILDKITE_PULL_REQUEST") != "false" },
+		envVar: nonempty("BUILDKITE"),
+		pr:     parseBool("BUILDKITE_PULL_REQUEST"),
 	},
 	{
 		names:  n("CircleCI"),
-		envVar: "CIRCLECI",
+		envVar: nonempty("CIRCLECI"),
 		pr:     nonempty("CIRCLE_PULL_REQUEST"),
 	},
 	{
 		names:  n("Cirrus CI"),
-		envVar: "CIRRUS_CI",
+		envVar: nonempty("CIRRUS_CI"),
 		pr:     nonempty("CIRRUS_PR"),
 	},
 	{
 		names:  n("Codeship"),
-		envVar: "CI_NAME",
+		envVar: nonempty("CI_NAME"),
 		pr:     func() bool { return false },
 	},
 	{
 		names:  n("Drone"),
-		envVar: "DRONE",
-		pr:     nonempty("DRONE_BUILD_EVENT"),
+		envVar: nonempty("DRONE"),
+		pr:     match("DRONE_BUILD_EVENT", "pull_request"),
+	},
+	{
+		names:  n("Woodpecker CI", "Woodpecker"),
+		envVar: match("CI", "woodpecker"),
+		pr:     match("CI_BUILD_EVENT", "pull_request"),
 	},
 	{
 		names:  n("dsari"),
-		envVar: "DSARI",
+		envVar: nonempty("DSARI"),
 		pr:     func() bool { return false },
 	},
 	{
 		names:  n("GitLab CI"),
-		envVar: "GITLAB_CI",
+		envVar: nonempty("GITLAB_CI"),
 		pr:     func() bool { return false },
 	},
 	{
 		names:  n("GoCD"),
-		envVar: "GO_PIPELINE_LABEL",
+		envVar: nonempty("GO_PIPELINE_LABEL"),
 		pr:     func() bool { return false },
 	},
 	{
 		names:  n("Hudson"),
-		envVar: "HUDSON_URL",
+		envVar: nonempty("HUDSON_URL"),
 		pr:     func() bool { return false },
 	},
 	{
 		names:  n("Jenkins"),
-		envVar: "JENKINS_URL",
+		envVar: any("JENKINS_URL", "BUILD_ID"),
 		pr:     nonempty("ghprbPullId"),
 	},
 	{
 		names:  n("Magnum CI"),
-		envVar: "MAGNUM",
+		envVar: nonempty("MAGNUM"),
 		pr:     func() bool { return false },
 	},
 	{
 		names:  n("Netlify CI"),
-		envVar: "NETLIFY_BUILD_BASE",
-		pr:     func() bool { return os.Getenv("PULL_REQUEST") != "false" },
+		envVar: nonempty("NETLIFY_BUILD_BASE"),
+		pr:     parseBool("PULL_REQUEST"),
 	},
 	{
 		names:  n("Nevercode"),
-		envVar: "NEVERCODE",
-		pr:     func() bool { return os.Getenv("NEVERCODE_PULL_REQUEST") != "false" },
+		envVar: nonempty("NEVERCODE"),
+		pr:     parseBool("NEVERCODE_PULL_REQUEST"),
 	},
 	{
 		names:  n("Sail CI"),
-		envVar: "SAILCI",
+		envVar: nonempty("SAILCI"),
 		pr:     nonempty("SAIL_PULL_REQUEST_NUMBER"),
 	},
 	{
 		names:  n("Semaphore"),
-		envVar: "SEMAPHORE",
+		envVar: nonempty("SEMAPHORE"),
 		pr:     nonempty("PULL_REQUEST_NUMBER"),
 	},
 	{
 		names:  n("Shippable"),
-		envVar: "SHIPPABLE",
-		pr:     func() bool { return os.Getenv("IS_PULL_REQUEST") == "true" },
+		envVar: nonempty("SHIPPABLE"),
+		pr:     parseBool("IS_PULL_REQUEST"),
 	},
 	{
 		names:  n("Solano CI"),
-		envVar: "TDDIUM",
+		envVar: nonempty("TDDIUM"),
 		pr:     nonempty("TDDIUM_PR_ID"),
 	},
 	{
 		names:  n("Strider CD"),
-		envVar: "STRIDER",
+		envVar: nonempty("STRIDER"),
 		pr:     func() bool { return false },
 	},
 	{
 		names:  n("TeamCity"),
-		envVar: "TEAMCITY_VERSION",
+		envVar: nonempty("TEAMCITY_VERSION"),
 		pr:     func() bool { return false },
 	},
 	{
 		names:  n("Travis CI", "TravisCI"),
-		envVar: "TRAVIS",
-		pr:     func() bool { return os.Getenv("TRAVIS_PULL_REQUEST") != "false" },
+		envVar: nonempty("TRAVIS"),
+		pr:     parseBool("TRAVIS_PULL_REQUEST"),
 	},
 }

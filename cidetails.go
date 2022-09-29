@@ -5,7 +5,6 @@
 package cidetails
 
 import (
-	"os"
 	"strings"
 )
 
@@ -20,7 +19,7 @@ func In(names ...string) bool {
 func in(name string) *vendor {
 	for i := range vendors {
 		for j := range vendors[i].names {
-			if strings.EqualFold(vendors[i].names[j], name) && os.Getenv(vendors[i].envVar) != "" {
+			if strings.EqualFold(vendors[i].names[j], name) && vendors[i].envVar() {
 				return &vendors[i]
 			}
 		}
