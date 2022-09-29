@@ -124,14 +124,14 @@ var vendors = []vendor{
 		pr:     func() bool { return false },
 	},
 	{
-		names:  n("Github Actions"),
-		envVar: nonempty("GITHUB_ACTIONS"),
-		pr:     nonempty("GITHUB_BASE_REF"),
-	},
-	{
 		names:  n("GitLab CI"),
 		envVar: nonempty("GITLAB_CI"),
 		pr:     func() bool { return false },
+	},
+	{
+		names:  n("Github Actions"),
+		envVar: nonempty("GITHUB_ACTIONS"),
+		pr:     nonempty("GITHUB_BASE_REF"),
 	},
 	{
 		names:  n("GoCD"),

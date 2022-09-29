@@ -51,6 +51,7 @@ Officially supported CI servers:
 - [Drone](https://drone.io)
 - [dsari](https://github.com/rfinnie/dsari)
 - [GitLab CI](https://about.gitlab.com/gitlab-ci/)
+- [Github Actions](https://github.com/features/actions)
 - [GoCD](https://www.go.cd/)
 - [Hudson](http://hudson-ci.org)
 - [Jenkins CI](https://jenkins-ci.org)
