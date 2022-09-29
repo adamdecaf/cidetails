@@ -1,7 +1,7 @@
 build: off
 
 image:
-  - Ubuntu1804
+  - Ubuntu
 
 clone_folder: /usr/go/src/github.com/adamdecaf/cidetails/
 
@@ -9,7 +9,7 @@ environment:
   CURRENT_CI_PROVIDER: AppVeyor
   GOPATH: /usr/go/
 
-stack: go 1.12
+stack: go 1.19
 
 before_test:
   - go vet ./...

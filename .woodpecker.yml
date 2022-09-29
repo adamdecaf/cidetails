@@ -1,6 +1,6 @@
 pipeline:
   test:
-    image: golang:1.12
+    image: golang:1.19
     commands:
       - go vet ./...
       - go test ./...

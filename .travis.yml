@@ -6,11 +6,11 @@ matrix:
     - go: master
   include:
     - os: linux
-      go: 1.12.x
+      go: 1.19.x
     - os: osx
-      go: 1.12.x
+      go: 1.19.x
     - os: windows
-      go: 1.12.x
+      go: 1.19.x
     - os: linux
       go: master
 
@@ -21,16 +21,8 @@ before_install:
   # Setup directory for binaries
   - mkdir ./bin
   - export PATH=$PATH:$PWD/bin
-  # Misspell
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget -O misspell.tar.gz https://github.com/client9/misspell/releases/download/v0.3.4/misspell_0.3.4_linux_64bit.tar.gz; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget -O misspell.tar.gz https://github.com/client9/misspell/releases/download/v0.3.4/misspell_0.3.4_mac_64bit.tar.gz; fi
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then tar xf misspell.tar.gz && cp ./misspell ./bin/misspell; fi
-  # staticcheck
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget -O staticcheck.tar.gz https://github.com/dominikh/go-tools/releases/download/2019.2.2/staticcheck_linux_amd64.tar.gz; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget -O staticcheck.tar.gz https://github.com/dominikh/go-tools/releases/download/2019.2.2/staticcheck_darwin_amd64.tar.gz; fi
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then tar xf staticcheck.tar.gz && cp ./staticcheck/staticcheck ./bin/staticcheck; fi
-  # golint
-  - go get -u golang.org/x/lint/golint
+  # golangci-lint
+  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.49.0
 
 before_script:
   - GOFILES=$(find . -type f -name '*.go' | grep -v vendor)
@@ -39,10 +31,10 @@ before_script:
 script:
   # Just check gofmt on linux, it's the fastest builder
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then test -z $(gofmt -s -l $GOFILES); fi
+  # Lint code
+  - golangci-lint run
+  # Run Tests
   - go test ./... -race -coverprofile=coverage.txt -covermode=atomic
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then misspell -error -locale US $GOFILES; fi
-  - golint -set_exit_status $GOFILES
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then staticcheck ./...; fi
 
 after_success:
   - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then bash <(curl -s https://codecov.io/bash); fi
